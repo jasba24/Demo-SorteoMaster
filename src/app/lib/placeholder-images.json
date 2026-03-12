@@ -1,0 +1,11 @@
+
+{
+  "placeholderImages": [
+    {
+      "id": "raffle-hero",
+      "description": "Luxury prize or abstract winning concept",
+      "imageUrl": "https://picsum.photos/seed/raffle1/1200/400",
+      "imageHint": "luxury prize"
+    }
+  ]
+}
