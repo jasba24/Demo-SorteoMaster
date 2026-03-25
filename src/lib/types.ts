@@ -10,7 +10,7 @@ export interface UserData {
 
 export interface PurchaseRecord {
   id: string;
-  numbers: number[];
+  numbers: string[];
   userData: UserData;
   totalAmount: number;
   timestamp: Date;
@@ -18,7 +18,7 @@ export interface PurchaseRecord {
 }
 
 export interface RaffleState {
-  selectedNumbers: number[];
+  selectedQuantity: number;
   userData: UserData | null;
   status: 'selecting' | 'checkout' | 'processing' | 'success';
   purchaseRecord: PurchaseRecord | null;

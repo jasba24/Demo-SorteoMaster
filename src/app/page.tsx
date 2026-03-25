@@ -7,41 +7,43 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import TicketSelector from '@/components/raffle/TicketSelector';
+import ComboSelector from '@/components/raffle/ComboSelector';
 import CheckoutForm from '@/components/raffle/CheckoutForm';
 import PaymentSimulation from '@/components/raffle/PaymentSimulation';
 import DigitalTicket from '@/components/raffle/DigitalTicket';
 import { UserData, PurchaseRecord, RaffleState } from '@/lib/types';
-import { ShoppingCart, Ticket, Shield, Trophy, ChevronRight, Zap, X, Trash2 } from 'lucide-react';
+import { ShoppingCart, Ticket, Shield, Trophy, ChevronRight, Zap } from 'lucide-react';
 
 const TICKET_PRICE = 10000;
 
 export default function Home() {
   const [state, setState] = useState<RaffleState>({
-    selectedNumbers: [],
+    selectedQuantity: 0,
     userData: null,
     status: 'selecting',
     purchaseRecord: null,
   });
 
-  // Effect to scroll to top whenever the view status changes
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [state.status]);
 
-  const heroImage = PlaceHolderImages.find(img => img.id === 'raffle-hero');
-
-  const handleToggleNumber = (num: number) => {
-    setState(prev => ({
-      ...prev,
-      selectedNumbers: prev.selectedNumbers.includes(num)
-        ? prev.selectedNumbers.filter(n => n !== num)
-        : [...prev.selectedNumbers, num]
-    }));
+  const generateTickets = (quantity: number): string[] => {
+    const numbers = new Set<string>();
+    while (numbers.size < quantity) {
+      const num = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+      numbers.add(num);
+    }
+    return Array.from(numbers).sort();
   };
 
-  const handleClearCart = () => {
-    setState(prev => ({ ...prev, selectedNumbers: [] }));
+  const heroImage = PlaceHolderImages.find(img => img.id === 'raffle-hero');
+
+  const handleSelectCombo = (quantity: number) => {
+    setState(prev => ({
+      ...prev,
+      selectedQuantity: quantity
+    }));
   };
 
   const handleCheckoutSubmit = (userData: UserData) => {
@@ -54,11 +56,13 @@ export default function Home() {
 
   const handlePaymentComplete = () => {
     const transactionId = `TX-${Math.random().toString(36).substring(7).toUpperCase()}`;
+    const generated = generateTickets(state.selectedQuantity);
+    
     const record: PurchaseRecord = {
       id: Math.random().toString(36).substring(2),
-      numbers: state.selectedNumbers,
+      numbers: generated,
       userData: state.userData!,
-      totalAmount: state.selectedNumbers.length * TICKET_PRICE,
+      totalAmount: state.selectedQuantity * TICKET_PRICE,
       timestamp: new Date(),
       transactionId,
     };
@@ -72,18 +76,17 @@ export default function Home() {
 
   const handleReset = () => {
     setState({
-      selectedNumbers: [],
+      selectedQuantity: 0,
       userData: null,
       status: 'selecting',
       purchaseRecord: null,
     });
   };
 
-  const total = state.selectedNumbers.length * TICKET_PRICE;
+  const total = state.selectedQuantity * TICKET_PRICE;
 
   return (
     <div className="min-h-screen pb-20">
-      {/* Header */}
       <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer" onClick={handleReset}>
@@ -105,12 +108,10 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Main Content Area */}
       <main className="max-w-7xl mx-auto px-4 pt-8">
         
         {state.status === 'selecting' && (
           <div className="space-y-12 animate-fade-in-up">
-            {/* Hero Section */}
             <section className="relative w-full h-[300px] md:h-[400px] rounded-3xl overflow-hidden shadow-2xl">
               <Image 
                 src={heroImage?.imageUrl || ""} 
@@ -123,89 +124,60 @@ export default function Home() {
               <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-transparent flex items-center p-8 md:p-16">
                 <div className="max-w-xl space-y-6">
                   <Badge className="bg-accent hover:bg-accent text-white border-none text-xs px-3 py-1 uppercase font-bold tracking-widest">
-                    SORTEO DEL MES
+                    EVENTO ESPECIAL
                   </Badge>
                   <h1 className="text-4xl md:text-6xl font-headline font-black text-white leading-tight">
                     Gana una <br/> <span className="text-accent italic">Experiencia de Lujo</span>
                   </h1>
                   <p className="text-white/80 text-lg hidden sm:block">
-                    Participa por una estancia todo incluido para dos personas en el Caribe. ¡Tus números de la suerte te esperan!
+                    Adquiere tus combos de la suerte. El sistema asignará números aleatorios de 4 cifras para el gran sorteo.
                   </p>
-                  <div className="flex flex-wrap gap-4">
-                    <div className="flex items-center gap-2 text-white bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
-                      <Zap className="w-4 h-4 text-accent" />
-                      <span className="text-sm font-bold">Boleta: $10.000 COP</span>
-                    </div>
-                  </div>
                 </div>
               </div>
             </section>
 
-            {/* Selection Grid & Summary Sidebar - Responsive Layout */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="md:col-span-2 space-y-8">
-                <TicketSelector 
-                  selectedNumbers={state.selectedNumbers} 
-                  onToggle={handleToggleNumber} 
+              <div className="md:col-span-2">
+                <ComboSelector 
+                  selectedQuantity={state.selectedQuantity} 
+                  onSelect={handleSelectCombo}
+                  pricePerTicket={TICKET_PRICE}
                 />
               </div>
 
               <div className="md:col-span-1">
                 <Card className="md:sticky md:top-24 border-none shadow-xl bg-white overflow-hidden">
                   <CardContent className="p-0">
-                    <div className="p-6 bg-slate-50 border-b flex items-center justify-between">
+                    <div className="p-6 bg-slate-50 border-b">
                       <h3 className="text-lg font-bold flex items-center gap-2">
                         <ShoppingCart className="w-5 h-5 text-primary" /> 
-                        Tu Carrito
+                        Tu Compra
                       </h3>
-                      {state.selectedNumbers.length > 0 && (
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={handleClearCart}
-                          className="text-gray-400 hover:text-destructive flex items-center gap-1 h-8 px-2"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                          <span className="text-[10px] font-bold uppercase tracking-wider">Vaciar</span>
-                        </Button>
-                      )}
                     </div>
                     <div className="p-6 space-y-6">
-                      {state.selectedNumbers.length === 0 ? (
+                      {state.selectedQuantity === 0 ? (
                         <div className="py-12 text-center space-y-3">
                           <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto">
-                            <Ticket className="w-8 h-8 text-slate-300" />
+                            <Zap className="w-8 h-8 text-slate-300" />
                           </div>
-                          <p className="text-gray-400 text-sm">Selecciona al menos un número para continuar.</p>
+                          <p className="text-gray-400 text-sm">Selecciona un combo para participar.</p>
                         </div>
                       ) : (
                         <>
-                          <div className="space-y-4">
-                            <div className="flex justify-between text-[10px] text-gray-400 font-bold uppercase tracking-widest border-b pb-2">
-                              <span>Tus Números ({state.selectedNumbers.length})</span>
-                              <span>Quitar</span>
+                          <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-2">
+                            <div className="flex justify-between items-center">
+                              <span className="text-sm font-bold text-gray-500 uppercase">Cantidad:</span>
+                              <Badge className="bg-primary">{state.selectedQuantity} Boletas</Badge>
                             </div>
-                            <div className="max-h-[250px] overflow-y-auto pr-2 custom-scrollbar grid grid-cols-2 gap-2">
-                              {state.selectedNumbers.sort((a,b) => a-b).map((num) => (
-                                <div 
-                                  key={num} 
-                                  className="flex items-center justify-between bg-slate-50 p-2 rounded-lg border border-slate-100 group hover:border-primary/30 transition-colors"
-                                >
-                                  <span className="font-mono font-bold text-gray-700">#{num.toString().padStart(3, '0')}</span>
-                                  <button 
-                                    onClick={() => handleToggleNumber(num)}
-                                    className="p-1 rounded-full bg-slate-200 text-slate-500 hover:bg-destructive hover:text-white transition-all"
-                                  >
-                                    <X className="w-3 h-3" />
-                                  </button>
-                                </div>
-                              ))}
+                            <div className="flex justify-between items-center">
+                              <span className="text-sm font-bold text-gray-500 uppercase">Precio Unitario:</span>
+                              <span className="font-bold text-gray-700">${TICKET_PRICE.toLocaleString()}</span>
                             </div>
                           </div>
                           
                           <div className="pt-6 border-t space-y-4">
                             <div className="flex justify-between items-center text-2xl font-black">
-                              <span className="text-sm font-bold text-gray-500 uppercase tracking-tighter">Total a pagar:</span>
+                              <span className="text-sm font-bold text-gray-500 uppercase">Total:</span>
                               <span className="text-primary">${total.toLocaleString()}</span>
                             </div>
                             <Button 
@@ -231,7 +203,7 @@ export default function Home() {
         {state.status === 'checkout' && (
           <CheckoutForm 
             total={total} 
-            ticketCount={state.selectedNumbers.length}
+            ticketCount={state.selectedQuantity}
             onBack={() => setState(prev => ({ ...prev, status: 'selecting' }))}
             onSubmit={handleCheckoutSubmit}
           />
@@ -253,7 +225,6 @@ export default function Home() {
 
       </main>
 
-      {/* Footer Branding */}
       <footer className="mt-20 py-10 border-t border-gray-100 bg-white">
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-2">
