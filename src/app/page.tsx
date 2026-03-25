@@ -106,7 +106,7 @@ export default function Home() {
         {state.status === 'selecting' && (
           <div className="space-y-12 animate-fade-in-up">
             {/* Hero Section */}
-            <section className="relative w-full h-[400px] rounded-3xl overflow-hidden shadow-2xl">
+            <section className="relative w-full h-[300px] md:h-[400px] rounded-3xl overflow-hidden shadow-2xl">
               <Image 
                 src={heroImage?.imageUrl || ""} 
                 alt="Sorteo Banner" 
@@ -123,7 +123,7 @@ export default function Home() {
                   <h1 className="text-4xl md:text-6xl font-headline font-black text-white leading-tight">
                     Gana una <br/> <span className="text-accent italic">Experiencia de Lujo</span>
                   </h1>
-                  <p className="text-white/80 text-lg">
+                  <p className="text-white/80 text-lg hidden sm:block">
                     Participa por una estancia todo incluido para dos personas en el Caribe. ¡Tus números de la suerte te esperan!
                   </p>
                   <div className="flex flex-wrap gap-4">
@@ -131,26 +131,22 @@ export default function Home() {
                       <Zap className="w-4 h-4 text-accent" />
                       <span className="text-sm font-bold">Boleta: $10.000 COP</span>
                     </div>
-                    <div className="flex items-center gap-2 text-white bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
-                      <Trophy className="w-4 h-4 text-accent" />
-                      <span className="text-sm font-bold">Premio: $25'000.000</span>
-                    </div>
                   </div>
                 </div>
               </div>
             </section>
 
-            {/* Selection Grid & Summary Sidebar */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2 space-y-8">
+            {/* Selection Grid & Summary Sidebar - Responsive Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="md:col-span-2 space-y-8">
                 <TicketSelector 
                   selectedNumbers={state.selectedNumbers} 
                   onToggle={handleToggleNumber} 
                 />
               </div>
 
-              <div className="lg:col-span-1">
-                <Card className="sticky top-24 border-none shadow-xl bg-white overflow-hidden">
+              <div className="md:col-span-1">
+                <Card className="md:sticky md:top-24 border-none shadow-xl bg-white overflow-hidden">
                   <CardContent className="p-0">
                     <div className="p-6 bg-slate-50 border-b flex items-center justify-between">
                       <h3 className="text-lg font-bold flex items-center gap-2">
