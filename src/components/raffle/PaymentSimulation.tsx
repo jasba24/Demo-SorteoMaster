@@ -80,7 +80,7 @@ const PaymentSimulation: React.FC<PaymentSimulationProps> = ({ total, onComplete
         <div className="space-y-4">
           <div className="flex justify-between items-center border-b pb-4">
             <span className="text-gray-500">Comercio</span>
-            <span className="font-bold">RaffleLink SAS</span>
+            <span className="font-bold">SorteoMaster SAS</span>
           </div>
           <div className="flex justify-between items-center border-b pb-4">
             <span className="text-gray-500">Valor a pagar</span>
@@ -88,7 +88,7 @@ const PaymentSimulation: React.FC<PaymentSimulationProps> = ({ total, onComplete
           </div>
           <div className="flex justify-between items-center border-b pb-4">
             <span className="text-gray-500">Referencia</span>
-            <span className="font-mono text-xs">RL-{Math.random().toString(36).substring(7).toUpperCase()}</span>
+            <span className="font-mono text-xs">SM-{Math.random().toString(36).substring(7).toUpperCase()}</span>
           </div>
         </div>
 

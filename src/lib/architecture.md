@@ -1,5 +1,5 @@
 
-# RaffleLink: Arquitectura Técnica Proyectada
+# SorteoMaster: Arquitectura Técnica Proyectada
 
 Esta es la propuesta de arquitectura para la implementación completa de la plataforma.
 

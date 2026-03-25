@@ -102,7 +102,7 @@ const DigitalTicket: React.FC<DigitalTicketProps> = ({ record, onReset }) => {
 
             <div className="flex items-center gap-2 text-[10px] text-green-600 font-bold bg-green-50 px-3 py-1 rounded-full border border-green-100">
               <ShieldCheck className="w-3 h-3" />
-              VERIFICADO POR RAFFLELINK
+              VERIFICADO POR SORTEOMASTER
             </div>
           </div>
         </div>

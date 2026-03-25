@@ -82,7 +82,7 @@ export default function Home() {
               <Ticket className="text-white w-6 h-6 transform -rotate-12" />
             </div>
             <span className="text-xl font-headline font-black tracking-tighter text-gray-900">
-              Raffle<span className="text-accent">Link</span>
+              Sorteo<span className="text-accent">Master</span>
             </span>
           </div>
           <div className="hidden md:flex items-center gap-8">
@@ -105,7 +105,7 @@ export default function Home() {
             <section className="relative w-full h-[400px] rounded-3xl overflow-hidden shadow-2xl">
               <Image 
                 src={heroImage?.imageUrl || ""} 
-                alt="Raffle Banner" 
+                alt="Sorteo Banner" 
                 fill 
                 className="object-cover"
                 priority
@@ -236,10 +236,10 @@ export default function Home() {
               <Ticket className="text-white w-5 h-5 transform -rotate-12" />
             </div>
             <span className="text-lg font-headline font-black tracking-tighter">
-              Raffle<span className="text-accent">Link</span>
+              Sorteo<span className="text-accent">Master</span>
             </span>
           </div>
-          <p className="text-sm text-gray-400">© 2026 RaffleLink. Todos los derechos reservados. Juega con responsabilidad.</p>
+          <p className="text-sm text-gray-400">© 2026 SorteoMaster. Todos los derechos reservados. Juega con responsabilidad.</p>
           <div className="flex gap-4">
              <div className="w-8 h-8 rounded-full bg-gray-50 border flex items-center justify-center hover:bg-primary/10 transition-colors cursor-pointer">
                <Shield className="w-4 h-4 text-gray-400" />

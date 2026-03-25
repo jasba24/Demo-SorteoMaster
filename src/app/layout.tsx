@@ -3,7 +3,7 @@ import type {Metadata} from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'RaffleLink - Plataforma de Sorteos Profesional',
+  title: 'SorteoMaster - Plataforma de Sorteos Profesional',
   description: 'Participa en sorteos emocionantes de forma segura y sencilla.',
 };
 
