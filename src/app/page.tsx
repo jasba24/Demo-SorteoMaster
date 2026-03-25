@@ -239,7 +239,7 @@ export default function Home() {
               Raffle<span className="text-accent">Link</span>
             </span>
           </div>
-          <p className="text-sm text-gray-400">© 2024 RaffleLink. Todos los derechos reservados. Juega con responsabilidad.</p>
+          <p className="text-sm text-gray-400">© 2026 RaffleLink. Todos los derechos reservados. Juega con responsabilidad.</p>
           <div className="flex gap-4">
              <div className="w-8 h-8 rounded-full bg-gray-50 border flex items-center justify-center hover:bg-primary/10 transition-colors cursor-pointer">
                <Shield className="w-4 h-4 text-gray-400" />

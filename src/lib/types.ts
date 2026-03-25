@@ -4,6 +4,7 @@ export interface UserData {
   lastName: string;
   idNumber: string;
   email: string;
+  phone: string;
   address: string;
 }
 

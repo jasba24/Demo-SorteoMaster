@@ -16,13 +16,14 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { UserData } from '@/lib/types';
-import { User, Mail, CreditCard, MapPin, ArrowRight } from 'lucide-react';
+import { User, Mail, CreditCard, MapPin, ArrowRight, Phone } from 'lucide-react';
 
 const formSchema = z.object({
   firstName: z.string().min(2, "Nombre es muy corto"),
   lastName: z.string().min(2, "Apellido es muy corto"),
   idNumber: z.string().min(6, "Cédula inválida"),
   email: z.string().email("Correo electrónico inválido"),
+  phone: z.string().min(10, "Número de celular inválido (mínimo 10 dígitos)"),
   address: z.string().min(5, "Dirección es muy corta"),
 });
 
@@ -41,6 +42,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ onSubmit, onBack, total, ti
       lastName: "",
       idNumber: "",
       email: "",
+      phone: "",
       address: "",
     },
   });
@@ -114,6 +116,23 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ onSubmit, onBack, total, ti
                     <div className="relative">
                       <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                       <Input type="email" placeholder="juan@ejemplo.com" className="pl-10" {...field} />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Celular / Teléfono</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input type="tel" placeholder="Ej. 3001234567" className="pl-10" {...field} />
                     </div>
                   </FormControl>
                   <FormMessage />
