@@ -12,7 +12,7 @@ import CheckoutForm from '@/components/raffle/CheckoutForm';
 import PaymentSimulation from '@/components/raffle/PaymentSimulation';
 import DigitalTicket from '@/components/raffle/DigitalTicket';
 import { UserData, PurchaseRecord, RaffleState } from '@/lib/types';
-import { ShoppingCart, Ticket, Shield, Trophy, ChevronRight, Zap } from 'lucide-react';
+import { ShoppingCart, Ticket, Shield, Trophy, ChevronRight, Zap, X, Trash2 } from 'lucide-react';
 
 const TICKET_PRICE = 10000;
 
@@ -33,6 +33,10 @@ export default function Home() {
         ? prev.selectedNumbers.filter(n => n !== num)
         : [...prev.selectedNumbers, num]
     }));
+  };
+
+  const handleClearCart = () => {
+    setState(prev => ({ ...prev, selectedNumbers: [] }));
   };
 
   const handleCheckoutSubmit = (userData: UserData) => {
@@ -148,11 +152,22 @@ export default function Home() {
               <div className="lg:col-span-1">
                 <Card className="sticky top-24 border-none shadow-xl bg-white overflow-hidden">
                   <CardContent className="p-0">
-                    <div className="p-6 bg-slate-50 border-b">
+                    <div className="p-6 bg-slate-50 border-b flex items-center justify-between">
                       <h3 className="text-lg font-bold flex items-center gap-2">
                         <ShoppingCart className="w-5 h-5 text-primary" /> 
                         Tu Carrito
                       </h3>
+                      {state.selectedNumbers.length > 0 && (
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={handleClearCart}
+                          className="text-gray-400 hover:text-destructive flex items-center gap-1 h-8 px-2"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span className="text-[10px] font-bold uppercase tracking-wider">Vaciar</span>
+                        </Button>
+                      )}
                     </div>
                     <div className="p-6 space-y-6">
                       {state.selectedNumbers.length === 0 ? (
@@ -164,28 +179,37 @@ export default function Home() {
                         </div>
                       ) : (
                         <>
-                          <div className="space-y-4 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar">
-                            <div className="flex justify-between text-sm text-gray-500 font-bold uppercase tracking-widest border-b pb-2">
-                              <span>Detalle</span>
-                              <span>Subtotal</span>
+                          <div className="space-y-4">
+                            <div className="flex justify-between text-[10px] text-gray-400 font-bold uppercase tracking-widest border-b pb-2">
+                              <span>Tus Números ({state.selectedNumbers.length})</span>
+                              <span>Quitar</span>
                             </div>
-                            <div className="flex justify-between items-center group">
-                              <div>
-                                <p className="font-bold text-gray-900">{state.selectedNumbers.length} Boletas</p>
-                                <p className="text-xs text-gray-500">Números: {state.selectedNumbers.join(', ')}</p>
-                              </div>
-                              <span className="font-bold text-primary">${total.toLocaleString()}</span>
+                            <div className="max-h-[250px] overflow-y-auto pr-2 custom-scrollbar grid grid-cols-2 gap-2">
+                              {state.selectedNumbers.sort((a,b) => a-b).map((num) => (
+                                <div 
+                                  key={num} 
+                                  className="flex items-center justify-between bg-slate-50 p-2 rounded-lg border border-slate-100 group hover:border-primary/30 transition-colors"
+                                >
+                                  <span className="font-mono font-bold text-gray-700">#{num.toString().padStart(3, '0')}</span>
+                                  <button 
+                                    onClick={() => handleToggleNumber(num)}
+                                    className="p-1 rounded-full bg-slate-200 text-slate-500 hover:bg-destructive hover:text-white transition-all"
+                                  >
+                                    <X className="w-3 h-3" />
+                                  </button>
+                                </div>
+                              ))}
                             </div>
                           </div>
                           
                           <div className="pt-6 border-t space-y-4">
-                            <div className="flex justify-between items-center text-xl font-black">
-                              <span>Total:</span>
-                              <span className="text-primary">${total.toLocaleString()} COP</span>
+                            <div className="flex justify-between items-center text-2xl font-black">
+                              <span className="text-sm font-bold text-gray-500 uppercase tracking-tighter">Total a pagar:</span>
+                              <span className="text-primary">${total.toLocaleString()}</span>
                             </div>
                             <Button 
                               onClick={() => setState(prev => ({ ...prev, status: 'checkout' }))}
-                              className="w-full bg-primary hover:bg-primary/90 text-white h-12 text-lg rounded-xl shadow-lg shadow-primary/20 flex gap-2 items-center"
+                              className="w-full bg-primary hover:bg-primary/90 text-white h-14 text-lg rounded-xl shadow-lg shadow-primary/20 flex gap-2 items-center"
                             >
                               Finalizar Compra <ChevronRight className="w-5 h-5" />
                             </Button>
