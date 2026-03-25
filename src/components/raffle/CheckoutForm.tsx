@@ -49,7 +49,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ onSubmit, onBack, total, ti
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6 animate-fade-in-up">
-      <div className="bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+      <div className="bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-gray-100">
         <div className="mb-8">
           <h2 className="text-2xl font-headline font-bold text-gray-900">Datos de Contacto</h2>
           <p className="text-gray-500">Completa la información para generar tus boletos digitales.</p>
@@ -157,17 +157,25 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ onSubmit, onBack, total, ti
               )}
             />
 
-            <div className="pt-6 border-t border-gray-100 flex items-center justify-between">
-              <div className="text-left">
-                <p className="text-sm text-gray-500">Resumen de compra ({ticketCount} boletas)</p>
-                <p className="text-xl font-bold text-primary">${total.toLocaleString()} COP</p>
+            <div className="pt-6 mt-8 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div className="text-center sm:text-left w-full sm:w-auto">
+                <p className="text-xs text-gray-400 uppercase font-bold tracking-widest mb-1">Resumen de compra ({ticketCount} boletas)</p>
+                <p className="text-3xl font-black text-primary leading-none">${total.toLocaleString()} <span className="text-sm font-bold opacity-50">COP</span></p>
               </div>
-              <div className="flex gap-3">
-                <Button type="button" variant="ghost" onClick={onBack}>
-                  Atrás
+              <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                <Button 
+                  type="submit" 
+                  className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-white h-14 px-8 text-lg rounded-xl shadow-lg shadow-primary/20 order-1 sm:order-2 flex gap-2 items-center"
+                >
+                  Continuar al pago <ArrowRight className="w-5 h-5" />
                 </Button>
-                <Button type="submit" className="bg-primary hover:bg-primary/90 text-white gap-2">
-                  Continuar al pago <ArrowRight className="w-4 h-4" />
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  onClick={onBack} 
+                  className="w-full sm:w-auto h-14 order-2 sm:order-1 text-gray-500 font-bold hover:bg-slate-50"
+                >
+                  Regresar
                 </Button>
               </div>
             </div>

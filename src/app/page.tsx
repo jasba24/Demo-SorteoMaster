@@ -1,7 +1,7 @@
 
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,11 @@ export default function Home() {
     status: 'selecting',
     purchaseRecord: null,
   });
+
+  // Effect to scroll to top whenever the view status changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [state.status]);
 
   const heroImage = PlaceHolderImages.find(img => img.id === 'raffle-hero');
 
