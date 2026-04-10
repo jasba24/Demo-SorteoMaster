@@ -1,11 +1,9 @@
 
 export interface UserData {
   firstName: string;
-  lastName: string;
   idNumber: string;
   email: string;
   phone: string;
-  address: string;
 }
 
 export interface PurchaseRecord {

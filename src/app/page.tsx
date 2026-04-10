@@ -2,17 +2,12 @@
 "use client"
 
 import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import ComboSelector from '@/components/raffle/ComboSelector';
 import CheckoutForm from '@/components/raffle/CheckoutForm';
 import PaymentSimulation from '@/components/raffle/PaymentSimulation';
 import DigitalTicket from '@/components/raffle/DigitalTicket';
 import { UserData, PurchaseRecord, RaffleState } from '@/lib/types';
-import { ShoppingCart, Ticket, Shield, Trophy, ChevronRight, Zap } from 'lucide-react';
+import { Ticket, ShoppingCart, ShieldCheck, Trash2, X } from 'lucide-react';
 
 const TICKET_PRICE = 10000;
 
@@ -29,49 +24,40 @@ export default function Home() {
   }, [state.status]);
 
   const generateTickets = (quantity: number): string[] => {
-    const numbers = new Set<string>();
-    while (numbers.size < quantity) {
-      const num = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-      numbers.add(num);
+    const nums = new Set<string>();
+    while (nums.size < quantity) {
+      const n = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+      nums.add(n);
     }
-    return Array.from(numbers).sort();
+    return Array.from(nums).sort();
   };
 
-  const heroImage = PlaceHolderImages.find(img => img.id === 'raffle-hero');
-
   const handleSelectCombo = (quantity: number) => {
-    setState(prev => ({
-      ...prev,
-      selectedQuantity: quantity
-    }));
+    setState(prev => ({ ...prev, selectedQuantity: quantity }));
   };
 
   const handleCheckoutSubmit = (userData: UserData) => {
-    setState(prev => ({
-      ...prev,
-      userData,
-      status: 'processing'
-    }));
+    setState(prev => ({ ...prev, userData, status: 'processing' }));
   };
 
-  const handlePaymentComplete = () => {
-    const transactionId = `TX-${Math.random().toString(36).substring(7).toUpperCase()}`;
-    const generated = generateTickets(state.selectedQuantity);
+  const handlePaymentComplete = async () => {
+    const numbers = generateTickets(state.selectedQuantity);
+    const transactionId = `SM-${Math.random().toString(36).substring(7).toUpperCase()}`;
     
     const record: PurchaseRecord = {
       id: Math.random().toString(36).substring(2),
-      numbers: generated,
+      numbers,
       userData: state.userData!,
       totalAmount: state.selectedQuantity * TICKET_PRICE,
       timestamp: new Date(),
       transactionId,
     };
 
-    setState(prev => ({
-      ...prev,
-      status: 'success',
-      purchaseRecord: record
-    }));
+    // Placeholder para Firestore: 
+    // const orderRef = collection(db, 'orders');
+    // await addDoc(orderRef, record);
+
+    setState(prev => ({ ...prev, status: 'success', purchaseRecord: record }));
   };
 
   const handleReset = () => {
@@ -86,163 +72,93 @@ export default function Home() {
   const total = state.selectedQuantity * TICKET_PRICE;
 
   return (
-    <div className="min-h-screen pb-20">
-      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <nav className="h-16 bg-white border-b flex items-center sticky top-0 z-40">
+        <div className="max-w-6xl mx-auto px-4 w-full flex justify-between items-center">
           <div className="flex items-center gap-2 cursor-pointer" onClick={handleReset}>
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-              <Ticket className="text-white w-6 h-6 transform -rotate-12" />
+            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white">
+              <Ticket className="w-6 h-6" />
             </div>
-            <span className="text-xl font-headline font-black tracking-tighter text-gray-900">
-              Sorteo<span className="text-accent">Master</span>
-            </span>
+            <span className="text-xl font-black">Sorteo<span className="text-accent">Master</span></span>
           </div>
-          <div className="hidden md:flex items-center gap-8">
-            <a href="#" className="text-sm font-medium text-gray-500 hover:text-primary transition-colors">Sorteos</a>
-            <a href="#" className="text-sm font-medium text-gray-500 hover:text-primary transition-colors">Ganadores</a>
-            <a href="#" className="text-sm font-medium text-gray-500 hover:text-primary transition-colors">Ayuda</a>
-          </div>
-          <Button variant="outline" className="rounded-full font-bold border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all">
-            Iniciar Sesión
-          </Button>
+          <button className="text-sm font-bold text-primary hover:underline">Sorteos Activos</button>
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-4 pt-8">
-        
+      <main className="flex-1 max-w-6xl mx-auto w-full p-4 md:py-10">
         {state.status === 'selecting' && (
-          <div className="space-y-12 animate-fade-in-up">
-            <section className="relative w-full h-[300px] md:h-[400px] rounded-3xl overflow-hidden shadow-2xl">
-              <Image 
-                src={heroImage?.imageUrl || ""} 
-                alt="Sorteo Banner" 
-                fill 
-                className="object-cover"
-                priority
-                data-ai-hint="luxury prize"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-transparent flex items-center p-8 md:p-16">
-                <div className="max-w-xl space-y-6">
-                  <Badge className="bg-accent hover:bg-accent text-white border-none text-xs px-3 py-1 uppercase font-bold tracking-widest">
-                    EVENTO ESPECIAL
-                  </Badge>
-                  <h1 className="text-4xl md:text-6xl font-headline font-black text-white leading-tight">
-                    Gana una <br/> <span className="text-accent italic">Experiencia de Lujo</span>
-                  </h1>
-                  <p className="text-white/80 text-lg hidden sm:block">
-                    Adquiere tus combos de la suerte. El sistema asignará números aleatorios de 4 cifras para el gran sorteo.
-                  </p>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in-up">
+            <div className="lg:col-span-2 space-y-10">
+              <section className="bg-primary p-8 md:p-12 rounded-[2rem] text-white relative overflow-hidden shadow-2xl">
+                <div className="relative z-10 max-w-md">
+                  <span className="text-xs font-black bg-accent px-3 py-1 rounded-full mb-4 inline-block">SORTEO EN VIVO</span>
+                  <h1 className="text-4xl md:text-5xl font-black mb-4">Gana el Premio Mayor</h1>
+                  <p className="opacity-80">Elige un combo y deja que la suerte haga el resto. Números automáticos de 4 cifras.</p>
                 </div>
-              </div>
-            </section>
+                <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
+              </section>
+              
+              <ComboSelector selectedQuantity={state.selectedQuantity} onSelect={handleSelectCombo} />
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="md:col-span-2">
-                <ComboSelector 
-                  selectedQuantity={state.selectedQuantity} 
-                  onSelect={handleSelectCombo}
-                  pricePerTicket={TICKET_PRICE}
-                />
-              </div>
+            <div className="lg:col-span-1">
+              <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100 sticky top-24">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="font-bold text-lg flex items-center gap-2">
+                    <ShoppingCart className="w-5 h-5 text-primary" /> Carrito
+                  </h3>
+                  {state.selectedQuantity > 0 && (
+                    <button onClick={() => handleSelectCombo(0)} className="text-red-400 hover:text-red-500 transition-colors">
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  )}
+                </div>
 
-              <div className="md:col-span-1">
-                <Card className="md:sticky md:top-24 border-none shadow-xl bg-white overflow-hidden">
-                  <CardContent className="p-0">
-                    <div className="p-6 bg-slate-50 border-b">
-                      <h3 className="text-lg font-bold flex items-center gap-2">
-                        <ShoppingCart className="w-5 h-5 text-primary" /> 
-                        Tu Compra
-                      </h3>
+                {state.selectedQuantity === 0 ? (
+                  <div className="py-12 text-center text-gray-400 text-sm">Elige un combo para empezar</div>
+                ) : (
+                  <div className="space-y-6">
+                    <div className="bg-gray-50 p-4 rounded-2xl flex justify-between items-center">
+                      <span className="font-bold text-gray-500">{state.selectedQuantity} Boletas</span>
+                      <span className="font-black text-primary">${total.toLocaleString()}</span>
                     </div>
-                    <div className="p-6 space-y-6">
-                      {state.selectedQuantity === 0 ? (
-                        <div className="py-12 text-center space-y-3">
-                          <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto">
-                            <Zap className="w-8 h-8 text-slate-300" />
-                          </div>
-                          <p className="text-gray-400 text-sm">Selecciona un combo para participar.</p>
-                        </div>
-                      ) : (
-                        <>
-                          <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-2">
-                            <div className="flex justify-between items-center">
-                              <span className="text-sm font-bold text-gray-500 uppercase">Cantidad:</span>
-                              <Badge className="bg-primary">{state.selectedQuantity} Boletas</Badge>
-                            </div>
-                            <div className="flex justify-between items-center">
-                              <span className="text-sm font-bold text-gray-500 uppercase">Precio Unitario:</span>
-                              <span className="font-bold text-gray-700">${TICKET_PRICE.toLocaleString()}</span>
-                            </div>
-                          </div>
-                          
-                          <div className="pt-6 border-t space-y-4">
-                            <div className="flex justify-between items-center text-2xl font-black">
-                              <span className="text-sm font-bold text-gray-500 uppercase">Total:</span>
-                              <span className="text-primary">${total.toLocaleString()}</span>
-                            </div>
-                            <Button 
-                              onClick={() => setState(prev => ({ ...prev, status: 'checkout' }))}
-                              className="w-full bg-primary hover:bg-primary/90 text-white h-14 text-lg rounded-xl shadow-lg shadow-primary/20 flex gap-2 items-center"
-                            >
-                              Finalizar Compra <ChevronRight className="w-5 h-5" />
-                            </Button>
-                            <div className="flex items-center justify-center gap-2 text-[10px] text-gray-400 font-bold uppercase tracking-widest">
-                              <Shield className="w-3 h-3" /> Transacción 100% Segura
-                            </div>
-                          </div>
-                        </>
-                      )}
+                    <button 
+                      onClick={() => setState(prev => ({ ...prev, status: 'checkout' }))}
+                      className="w-full bg-primary text-white py-4 rounded-xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
+                    >
+                      Continuar Compra
+                    </button>
+                    <div className="text-[10px] text-center text-gray-300 font-bold uppercase tracking-widest flex items-center justify-center gap-1">
+                      <ShieldCheck className="w-3 h-3" /> Pago 100% Protegido
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         )}
 
         {state.status === 'checkout' && (
-          <CheckoutForm 
-            total={total} 
-            ticketCount={state.selectedQuantity}
-            onBack={() => setState(prev => ({ ...prev, status: 'selecting' }))}
-            onSubmit={handleCheckoutSubmit}
-          />
+          <CheckoutForm total={total} onBack={() => setState(prev => ({ ...prev, status: 'selecting' }))} onSubmit={handleCheckoutSubmit} />
         )}
 
         {state.status === 'processing' && (
-          <PaymentSimulation 
-            total={total} 
-            onComplete={handlePaymentComplete}
-          />
+          <PaymentSimulation total={total} onComplete={handlePaymentComplete} />
         )}
 
         {state.status === 'success' && state.purchaseRecord && (
-          <DigitalTicket 
-            record={state.purchaseRecord} 
-            onReset={handleReset}
-          />
+          <DigitalTicket record={state.purchaseRecord} onReset={handleReset} />
         )}
-
       </main>
 
-      <footer className="mt-20 py-10 border-t border-gray-100 bg-white">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <Ticket className="text-white w-5 h-5 transform -rotate-12" />
-            </div>
-            <span className="text-lg font-headline font-black tracking-tighter">
-              Sorteo<span className="text-accent">Master</span>
-            </span>
-          </div>
-          <p className="text-sm text-gray-400">© 2026 SorteoMaster. Todos los derechos reservados. Juega con responsabilidad.</p>
+      <footer className="bg-white border-t py-12 px-4 mt-20">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="text-lg font-black">Sorteo<span className="text-accent">Master</span></div>
+          <p className="text-sm text-gray-400">© 2026 SorteoMaster. Transacciones seguras vía PSE.</p>
           <div className="flex gap-4">
-             <div className="w-8 h-8 rounded-full bg-gray-50 border flex items-center justify-center hover:bg-primary/10 transition-colors cursor-pointer">
-               <Shield className="w-4 h-4 text-gray-400" />
-             </div>
-             <div className="w-8 h-8 rounded-full bg-gray-50 border flex items-center justify-center hover:bg-primary/10 transition-colors cursor-pointer">
-               <Trophy className="w-4 h-4 text-gray-400" />
-             </div>
+            <div className="w-10 h-10 rounded-full bg-gray-50 border flex items-center justify-center">
+              <ShieldCheck className="w-5 h-5 text-gray-300" />
+            </div>
           </div>
         </div>
       </footer>

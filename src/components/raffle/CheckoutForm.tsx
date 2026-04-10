@@ -5,183 +5,109 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { 
-  Form, 
-  FormControl, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormMessage 
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { UserData } from '@/lib/types';
-import { User, Mail, CreditCard, MapPin, ArrowRight, Phone } from 'lucide-react';
+import { ArrowRight, User, Mail, CreditCard, Phone } from 'lucide-react';
 
-const formSchema = z.object({
-  firstName: z.string().min(2, "Nombre es muy corto"),
-  lastName: z.string().min(2, "Apellido es muy corto"),
+const schema = z.object({
+  firstName: z.string().min(2, "Nombre requerido"),
   idNumber: z.string().min(6, "Cédula inválida"),
-  email: z.string().email("Correo electrónico inválido"),
-  phone: z.string().min(10, "Número de celular inválido (mínimo 10 dígitos)"),
-  address: z.string().min(5, "Dirección es muy corta"),
+  email: z.string().email("Email inválido"),
+  phone: z.string().min(10, "Celular inválido"),
 });
 
-interface CheckoutFormProps {
+interface Props {
   onSubmit: (data: UserData) => void;
   onBack: () => void;
   total: number;
-  ticketCount: number;
 }
 
-const CheckoutForm: React.FC<CheckoutFormProps> = ({ onSubmit, onBack, total, ticketCount }) => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      idNumber: "",
-      email: "",
-      phone: "",
-      address: "",
-    },
+const CheckoutForm: React.FC<Props> = ({ onSubmit, onBack, total }) => {
+  const { register, handleSubmit, formState: { errors } } = useForm<UserData>({
+    resolver: zodResolver(schema),
   });
 
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-6 animate-fade-in-up">
-      <div className="bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-gray-100">
-        <div className="mb-8">
-          <h2 className="text-2xl font-headline font-bold text-gray-900">Datos de Contacto</h2>
-          <p className="text-gray-500">Completa la información para generar tus boletos digitales.</p>
+    <div className="max-w-xl mx-auto bg-white p-6 md:p-8 rounded-3xl shadow-xl border border-gray-100 animate-fade-in-up">
+      <h2 className="text-2xl font-bold mb-2">Datos de Registro</h2>
+      <p className="text-gray-500 mb-8 text-sm">Tus boletos se enviarán a este correo.</p>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <div>
+          <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Nombre Completo</label>
+          <div className="relative">
+            <User className="absolute left-3 top-3 h-5 w-5 text-gray-300" />
+            <input 
+              {...register("firstName")}
+              className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-gray-100 focus:border-primary focus:outline-none transition-colors"
+              placeholder="Juan Pérez"
+            />
+          </div>
+          {errors.firstName && <span className="text-red-500 text-xs">{errors.firstName.message}</span>}
         </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="firstName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nombre</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input placeholder="Ej. Juan" className="pl-10" {...field} />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="lastName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Apellido</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Ej. Pérez" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <FormField
-              control={form.control}
-              name="idNumber"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Cédula / Identificación</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <CreditCard className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                      <Input placeholder="Ej. 123456789" className="pl-10" {...field} />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+        <div>
+          <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Cédula</label>
+          <div className="relative">
+            <CreditCard className="absolute left-3 top-3 h-5 w-5 text-gray-300" />
+            <input 
+              {...register("idNumber")}
+              className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-gray-100 focus:border-primary focus:outline-none transition-colors"
+              placeholder="123456789"
             />
+          </div>
+          {errors.idNumber && <span className="text-red-500 text-xs">{errors.idNumber.message}</span>}
+        </div>
 
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Correo Electrónico</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                      <Input type="email" placeholder="juan@ejemplo.com" className="pl-10" {...field} />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+        <div>
+          <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Correo Electrónico</label>
+          <div className="relative">
+            <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-300" />
+            <input 
+              type="email"
+              {...register("email")}
+              className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-gray-100 focus:border-primary focus:outline-none transition-colors"
+              placeholder="juan@ejemplo.com"
             />
+          </div>
+          {errors.email && <span className="text-red-500 text-xs">{errors.email.message}</span>}
+        </div>
 
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Celular / Teléfono</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                      <Input type="tel" placeholder="Ej. 3001234567" className="pl-10" {...field} />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+        <div>
+          <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Celular</label>
+          <div className="relative">
+            <Phone className="absolute left-3 top-3 h-5 w-5 text-gray-300" />
+            <input 
+              type="tel"
+              {...register("phone")}
+              className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-gray-100 focus:border-primary focus:outline-none transition-colors"
+              placeholder="3001234567"
             />
+          </div>
+          {errors.phone && <span className="text-red-500 text-xs">{errors.phone.message}</span>}
+        </div>
 
-            <FormField
-              control={form.control}
-              name="address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Dirección de Residencia</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                      <Input placeholder="Calle 123 #45-67" className="pl-10" {...field} />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="pt-6 mt-8 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-6">
-              <div className="text-center sm:text-left w-full sm:w-auto">
-                <p className="text-xs text-gray-400 uppercase font-bold tracking-widest mb-1">Resumen de compra ({ticketCount} boletas)</p>
-                <p className="text-3xl font-black text-primary leading-none">${total.toLocaleString()} <span className="text-sm font-bold opacity-50">COP</span></p>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                <Button 
-                  type="submit" 
-                  className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-white h-14 px-8 text-lg rounded-xl shadow-lg shadow-primary/20 order-1 sm:order-2 flex gap-2 items-center"
-                >
-                  Continuar al pago <ArrowRight className="w-5 h-5" />
-                </Button>
-                <Button 
-                  type="button" 
-                  variant="ghost" 
-                  onClick={onBack} 
-                  className="w-full sm:w-auto h-14 order-2 sm:order-1 text-gray-500 font-bold hover:bg-slate-50"
-                >
-                  Regresar
-                </Button>
-              </div>
-            </div>
-          </form>
-        </Form>
-      </div>
+        <div className="pt-6 border-t flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="text-center md:text-left">
+            <p className="text-xs text-gray-400 font-bold uppercase">Total a Pagar</p>
+            <p className="text-3xl font-black text-primary">${total.toLocaleString()}</p>
+          </div>
+          <div className="flex gap-2 w-full md:w-auto">
+            <button 
+              type="button" 
+              onClick={onBack}
+              className="flex-1 md:flex-none px-6 py-3 font-bold text-gray-500 hover:bg-gray-50 rounded-xl transition-colors"
+            >
+              Atrás
+            </button>
+            <button 
+              type="submit"
+              className="flex-1 md:flex-none bg-primary text-white px-8 py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
+            >
+              Pagar Ahora <ArrowRight className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
   );
 };
